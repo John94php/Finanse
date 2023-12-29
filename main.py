@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 import sqlite3
 from tkcalendar import Calendar
-
+import locale
+locale.setlocale(locale.LC_NUMERIC, 'C')
 
 def save_expense(param, param1, param2, param3):
     print(param)
@@ -11,10 +12,18 @@ def save_expense(param, param1, param2, param3):
     # param2 - kategoria
     # param3 - data dokonania wydatku
 
-    print(param1)
     print(param2)
     print(param3)
     pass
+
+
+def on_validate_float(P, i, d, s, S, v, V, W):
+    try:
+        # Użyj locale.atof, aby przekształcić zgodnie z ustawieniami regionalnymi
+        locale.atof(S)
+        return True
+    except ValueError:
+        return False
 
 
 class MyApp:
@@ -77,12 +86,13 @@ class MyApp:
 
         label_date = ttk.Label(self.content_frame, text="Data dokonania wydatku:")
         label_date.pack(padx=10, pady=5)
-        cal = Calendar(self.content_frame, selectmode='day',date_pattern="yyyy-mm-dd")
+        cal = Calendar(self.content_frame, selectmode='day', date_pattern="yyyy-mm-dd")
         cal.pack(padx=10, pady=5)
 
         label_amount = ttk.Label(self.content_frame, text="Kwota:")
         label_amount.pack(padx=10, pady=5)
-        entry_amount = ttk.Entry(self.content_frame)
+        entry_amount = ttk.Entry(self.content_frame, validate="key", validatecommand=(
+            root.register(on_validate_float), "%P", "%i", "%d", "%s", "%S", "%v", "%V", "%W"))
         entry_amount.pack(padx=10, pady=5)
 
         button_save = ttk.Button(self.content_frame, text="Zapisz",
